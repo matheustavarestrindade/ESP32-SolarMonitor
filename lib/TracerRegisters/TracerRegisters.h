@@ -14,9 +14,11 @@ class TracerRegisters : public ModbusMasterCallable {
     TracerRegisters(uint8_t MAX485_RE_NEG, uint8_t MAX485_DE, Stream &serial);
     TracerRegisters();
 
-    char *getRegistersValueInJson();
+    void getRegistersValueInJson(char *&loadValues);
 
     void updateModbusInformation();
+
+    bool testConn(uint16_t address);
     /*
          Implementation of ModbusMasterCallable
       */
@@ -25,11 +27,13 @@ class TracerRegisters : public ModbusMasterCallable {
     virtual void onModbusIdle();
 
     virtual void onModbusPostTransmission();
+    bool connectionStablished = false;
 
    private:
     void updateStats();
     void AddressRegistry_3100();
     void AddressRegistry_311A();
+    void AddressRegistry_3200();
     void AddressRegistry_331B();
     void AddressRegistry_9003();
     std::string to_string(float f);
@@ -40,9 +44,10 @@ class TracerRegisters : public ModbusMasterCallable {
     bool rs485readSuccess;
     float *variableValues;
     uint8_t current_update = 0;
+    uint8_t result;
 };
 
-typedef enum {
+typedef enum : uint16_t {
     MODBUS_ADDRESS_PV_VOLTAGE = 0x3100,
     MODBUS_ADDRESS_PV_POWER = 0x3102,
     MODBUS_ADDRESS_PV_CURRENT = 0x3101,
@@ -51,6 +56,7 @@ typedef enum {
     MODBUS_ADDRESS_BATT_TEMP = 0x3110,
     MODBUS_ADDRESS_BATT_VOLTAGE = 0x3104,
     MODBUS_ADDRESS_BATT_SOC = 0x311A,
+    MODBUS_ADDRESS_BATT_REAL_RATED_POWER = 0x311D,
     MODBUS_ADDRESS_BATTERY_CHARGE_CURRENT = 0x3105,
     MODBUS_ADDRESS_BATTERY_CHARGE_POWER = 0x3106,
     MODBUS_ADDRESS_BATTERY_OVERALL_CURRENT = 0x331B,
@@ -68,7 +74,9 @@ typedef enum {
     MODBUS_ADDRESS_CONTROLLER_TEMP = 0x3111,
     MODBUS_ADDRESS_REMOTE_BATTERY_TEMP = 0x311B,
     MODBUS_ADDRESS_REALTIME_CLOCK = 0x9013,
+
     MODBUS_ADDRESS_BATTERY_TYPE = 0x9000,
+
     MODBUS_ADDRESS_HIGH_VOLTAGE_DISCONNECT = 0x9003,
     MODBUS_ADDRESS_CHARGING_LIMIT_VOLTAGE = 0x9004,
     MODBUS_ADDRESS_OVER_VOLTAGE_RECONNECT = 0x9005,
@@ -111,6 +119,9 @@ typedef enum {
     BATTERY_BOOST_VOLTAGE,
     BATTERY_EQUALIZATION_VOLTAGE,
     BATTERY_FLOAT_VOLTAGE,
+    BATTERY_TYPE,
+    BATTERY_CAPACITY,
+    BATERRY_REAL_RATED_POWER,
     BATTERY_FLOAT_MIN_VOLTAGE,
     BATTERY_CHARGING_LIMIT_VOLTAGE,
     BATTERY_DISCHARGING_LIMIT_VOLTAGE,
@@ -120,9 +131,9 @@ typedef enum {
     BATTERY_OVER_VOLTAGE_RECONNECT,
     BATTERY_UNDER_VOLTAGE_SET,
     BATTERY_UNDER_VOLTAGE_RESET,
-    BATTERY_STATUS_TEXT,
-    CHARGING_EQUIPMENT_STATUS_TEXT,
-    DISCHARGING_EQUIPMENT_STATUS_TEXT,
+    BATTERY_STATUS,
+    CHARGING_EQUIPMENT_STATUS,
+    DISCHARGING_EQUIPMENT_STATUS,
     CHARGING_DEVICE_ONOFF,
     HEATSINK_TEMP,
 
