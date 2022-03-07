@@ -166,6 +166,9 @@
         "cstring": "cpp",
         "unordered_set": "cpp",
         "iomanip": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "random": "cpp",
+        "bitset": "cpp",
+        "regex": "cpp"
     }
 }

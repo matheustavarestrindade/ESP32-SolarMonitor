@@ -1,6 +1,10 @@
 #include "TracerRegisters.h"
 
 #include <sstream>
+inline const std::string BoolToString(bool b) {
+    std::string value(b ? "true" : "false");
+    return value;
+}
 
 TracerRegisters::TracerRegisters(uint8_t MAX485_RE_NEG, uint8_t MAX485_DE, Stream& serial) {
     this->variableValues = new float[SolarTracerVariables::VARIABLES_COUNT + 1]();
@@ -19,7 +23,7 @@ TracerRegisters::TracerRegisters(uint8_t MAX485_RE_NEG, uint8_t MAX485_DE, Strea
     this->node.begin(1, serial);
 }
 
-void TracerRegisters::getRegistersValueInJson(char*& loadValues) {
+void TracerRegisters::getRegistersValueInJson(char*& loadValues, bool PC_ONLINE_STATUS) {
     std::string jsonString;
     jsonString += "{";
     jsonString += "\"PV_VOLTAGE\":" + to_string(this->variableValues[SolarTracerVariables::PV_VOLTAGE]) + ",";
@@ -65,7 +69,8 @@ void TracerRegisters::getRegistersValueInJson(char*& loadValues) {
     jsonString += "\"CHARGING_EQUIPMENT_STATUS\":" + to_string(this->variableValues[SolarTracerVariables::CHARGING_EQUIPMENT_STATUS]) + ",";
     jsonString += "\"DISCHARGING_EQUIPMENT_STATUS\":" + to_string(this->variableValues[SolarTracerVariables::DISCHARGING_EQUIPMENT_STATUS]) + ",";
     jsonString += "\"CHARGING_DEVICE_ONOFF\":" + to_string(this->variableValues[SolarTracerVariables::CHARGING_DEVICE_ONOFF]) + ",";
-    jsonString += "\"HEATSINK_TEMP\":" + to_string(this->variableValues[SolarTracerVariables::HEATSINK_TEMP]);
+    jsonString += "\"HEATSINK_TEMP\":" + to_string(this->variableValues[SolarTracerVariables::HEATSINK_TEMP]) + ",";
+    jsonString += "\"PC_ONLINE_STATUS\":" + BoolToString(PC_ONLINE_STATUS);
     jsonString += "}";
     loadValues = new char[jsonString.length() + 1];
     strcpy(loadValues, jsonString.c_str());

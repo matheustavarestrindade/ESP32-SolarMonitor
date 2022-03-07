@@ -14,7 +14,7 @@ class TracerRegisters : public ModbusMasterCallable {
     TracerRegisters(uint8_t MAX485_RE_NEG, uint8_t MAX485_DE, Stream &serial);
     TracerRegisters();
 
-    void getRegistersValueInJson(char *&loadValues);
+    void getRegistersValueInJson(char *&loadValues, bool PC_ONLINE_STATUS);
 
     void updateModbusInformation();
 
